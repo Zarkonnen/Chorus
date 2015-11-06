@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from models import *
+from chorusp.chorus.models import *
 
 def importance(v):
     if v < 0.1:

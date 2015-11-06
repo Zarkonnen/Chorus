@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from chorus import urls as chorus_urls
+from chorusp.chorus import urls as chorus_urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
