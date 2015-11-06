@@ -16,7 +16,7 @@ def importance(v):
         return 'very_important'
     return 'urgent'
 
-def home(request):
+def ui(request, page):
     if request.method == 'POST':
         chore = Chore.objects.get(id=int(request.POST['chore']))
         if request.POST['cmd'] == 'done':
@@ -25,4 +25,10 @@ def home(request):
             chore.updateStatus(request.POST['status'])
     chore_list = [(False, ch, importance(ch.doUrgency), ch.doUrgency) for ch in Chore.objects.all()] + [(True, ch, importance(ch.reportUrgency), ch.reportUrgency) for ch in Chore.objects.filter(choreType='R')]
     chore_list.sort(key=lambda tp: -tp[3])
-    return render(request, "base.html", context={'chores': chore_list})
+    return render(request, page, context={'chores': chore_list})
+
+def home(request):
+    return ui(request, "base.html")
+
+def live(request):
+    return ui(request, "live.html")

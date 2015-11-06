@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Chorus</title>
+        <style>
+            body {
+                font-size: 24pt;
+            }
+            .content {
+                width: 95%;
+                margin: auto;
+            }
+            .chore {
+                padding: 0.25em;
+                margin-bottom: 0.25em;
+            }
+            .done { background: #eeeeee; }
+            .very_unimportant { background: #b0ffbb; }
+            .unimportant { background: #b0c0ff; }
+            .todo { background: #f7ffb0; }
+            .important { background: #ffd3b0; }
+            .very_important { background: #ffb0b0; }
+            .urgent { background: #ffb0d9; }
+            form {
+                display: inline;
+            }
+            .buttons {
+                margin-top: 0.5em;
+                display: block;
+            }
+            input {
+                font-size: 24pt;
+                padding: 0.5em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+        {% for report, chore, importance, score in chores %}
+            <div class="chore {{ importance }}">
+                <span class="chore_name">{% if report %}Check: {% endif %}{{ chore.name }}</span>
+                <span class="buttons">
+                    <form action="/live" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="cmd" value="done">
+                        <input type="hidden" name="chore" value="{{chore.id}}">
+                        <input type="submit" value="Done">
+                    </form>
+                    {% if report %}
+                        <form action="/live" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="cmd" value="update">
+                            <input type="hidden" name="chore" value="{{chore.id}}">
+                            <input type="hidden" name="status" value="U">
+                            <input type="submit" value="Unimportant">
+                        </form>
+                        <form action="/live" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="cmd" value="update">
+                            <input type="hidden" name="chore" value="{{chore.id}}">
+                            <input type="hidden" name="status" value="N">
+                            <input type="submit" value="Needs Doing">
+                        </form>
+                        <form action="/live" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="cmd" value="update">
+                            <input type="hidden" name="chore" value="{{chore.id}}">
+                            <input type="hidden" name="status" value="I">
+                            <input type="submit" value="Important">
+                        </form>
+                        <form action="/live" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="cmd" value="update">
+                            <input type="hidden" name="chore" value="{{chore.id}}">
+                            <input type="hidden" name="status" value="V">
+                            <input type="submit" value="Urgent!">
+                        </form>
+                    {% endif %}
+                </span>
+            </div>
+        {% endfor %}
+        </div>
+        <script>
+            setTimeout(function() { location.reload(); }, 10 * 60 * 1000);
+        </script>
+    </body>
+</html>
