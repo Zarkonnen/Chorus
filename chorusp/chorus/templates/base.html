@@ -2,7 +2,7 @@
 
 <html>
     <head>
-        <title>Chorus</title>
+        <title>{{ chores_list.name }}</title>
         <style>
             body {
                 font-size: 18pt;
@@ -33,40 +33,51 @@
     </head>
     <body>
         <div class="content">
-        <h1><a href="/">Chorus</a></h1>
+        <h1><a href="">{{ chores_list.name }}</a></h1>
         {% for report, chore, importance, score in chores %}
             <div class="chore {{ importance }}">
                 <span class="chore_name">{% if report %}Check: {% endif %}{{ chore.name }}</span>
                 <span class="buttons">
-                    <form action="/" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="cmd" value="done">
                         <input type="hidden" name="chore" value="{{chore.id}}">
                         <input type="submit" value="Done">
                     </form>
+                    {% if not report %}
+                        {% for t in times_ago_list %}
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="cmd" value="doneOn">
+                                <input type="hidden" name="time_ago" value="{{t.0}}">
+                                <input type="hidden" name="chore" value="{{chore.id}}">
+                                <input type="submit" value="{{t.1}}">
+                            </form>
+                        {% endfor %}
+                    {% endif %}
                     {% if report %}
-                        <form action="/" method="post">
+                        <form action="" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="cmd" value="update">
                             <input type="hidden" name="chore" value="{{chore.id}}">
                             <input type="hidden" name="status" value="U">
                             <input type="submit" value="Unimportant">
                         </form>
-                        <form action="/" method="post">
+                        <form action="" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="cmd" value="update">
                             <input type="hidden" name="chore" value="{{chore.id}}">
                             <input type="hidden" name="status" value="N">
                             <input type="submit" value="Needs Doing">
                         </form>
-                        <form action="/" method="post">
+                        <form action="" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="cmd" value="update">
                             <input type="hidden" name="chore" value="{{chore.id}}">
                             <input type="hidden" name="status" value="I">
                             <input type="submit" value="Important">
                         </form>
-                        <form action="/" method="post">
+                        <form action="" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="cmd" value="update">
                             <input type="hidden" name="chore" value="{{chore.id}}">
