@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from chorusp.chorus.models import *
 
 def importance(v):
@@ -25,6 +26,8 @@ def ui(request, list_slug, page):
         
     if request.method == 'POST':
         chore = Chore.objects.get(id=int(request.POST['chore']))
+        if not chore in chores_list.chores.all():
+            raise PermissionDenied()
         if request.POST['cmd'] == 'done':
             chore.markAsDone()
         elif request.POST['cmd'] == 'doneOn':
