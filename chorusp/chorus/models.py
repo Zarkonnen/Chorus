@@ -1,5 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 import datetime
+
+class ChoresList(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.CharField(max_length=100, unique=True)
+    user = models.ManyToManyField(User)
+    
+    def __str__(self):
+        return self.name
 
 class Chore(models.Model):
     TYPE_CHOICES = (
@@ -18,6 +27,7 @@ class Chore(models.Model):
     periodHours = models.IntegerField(default=168)
     status = models.CharField(max_length=1, choices=STATUSES, default='D')
     lastUpdated = models.DateTimeField(auto_now_add=True)
+    choresList = models.ForeignKey(ChoresList)
     
     def markAsDone(self):
         self.lastUpdated = datetime.datetime.now()
