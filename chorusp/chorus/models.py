@@ -5,7 +5,7 @@ import datetime
 class ChoresList(models.Model):
     name = models.CharField(max_length=100)
     slug = models.CharField(max_length=100, unique=True)
-    user = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, related_name='chores_lists')
     
     def __str__(self):
         return self.name
@@ -27,7 +27,7 @@ class Chore(models.Model):
     periodHours = models.IntegerField(default=168)
     status = models.CharField(max_length=1, choices=STATUSES, default='D')
     lastUpdated = models.DateTimeField(auto_now_add=True)
-    choresList = models.ForeignKey(ChoresList)
+    choresList = models.ForeignKey(ChoresList, related_name="chores")
     
     def markAsDone(self):
         self.lastUpdated = datetime.datetime.now()

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Chorus</title>
+        <style>
+            body {
+                font-size: 18pt;
+            }
+            .content {
+                width: 95%;
+                margin: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+        <h1><a href="">Chorus</a></h1>
+        <ul>{% for l in chores_lists %}
+            <li><a href="{% url 'chorusp.chorus.views.chores' l.slug %}">{{ l.name }}</a></li>
+        {% endfor %}</ul>
+    </body>
+</html>

@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.http import Http404
 from chorusp.chorus.models import *
 
 def importance(v):
@@ -16,19 +17,30 @@ def importance(v):
         return 'very_important'
     return 'urgent'
 
-def ui(request, page):
+def ui(request, list_slug, page):
+    chores_list = get_object_or_404(ChoresList, slug=list_slug)
+
+    if not request.user.is_authenticated() or not request.user in chores_list.users.all():
+        raise Http404("Page does not exist.")
+        
     if request.method == 'POST':
         chore = Chore.objects.get(id=int(request.POST['chore']))
         if request.POST['cmd'] == 'done':
             chore.markAsDone()
         else:
             chore.updateStatus(request.POST['status'])
-    chore_list = [(False, ch, importance(ch.doUrgency), ch.doUrgency) for ch in Chore.objects.all()] + [(True, ch, importance(ch.reportUrgency), ch.reportUrgency) for ch in Chore.objects.filter(choreType='R')]
-    chore_list.sort(key=lambda tp: -tp[3])
-    return render(request, page, context={'chores': chore_list})
+    rendered_chores_list = [(False, ch, importance(ch.doUrgency), ch.doUrgency) for ch in chores_list.chores.all()] + [(True, ch, importance(ch.reportUrgency), ch.reportUrgency) for ch in chores_list.chores.filter(choreType='R')]
+    rendered_chores_list.sort(key=lambda tp: -tp[3])
+    return render(request, page, context={'chores': rendered_chores_list, 'chores_list': chores_list})
 
 def home(request):
-    return ui(request, "base.html")
+    if not request.user.is_authenticated():
+        raise Http404("Page does not exist.")
+    
+    return render(request, 'home.html', context={'chores_lists': request.user.chores_lists.all()})
 
-def live(request):
-    return ui(request, "live.html")
+def chores(request, list_slug):
+    return ui(request, list_slug, "base.html")
+
+def live(request, list_slug):
+    return ui(request, list_slug, "live.html")
