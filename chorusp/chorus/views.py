@@ -27,11 +27,14 @@ def ui(request, list_slug, page):
         chore = Chore.objects.get(id=int(request.POST['chore']))
         if request.POST['cmd'] == 'done':
             chore.markAsDone()
+        elif request.POST['cmd'] == 'doneOn':
+            chore.markAsDoneOn(request.POST['time_ago'])
         else:
             chore.updateStatus(request.POST['status'])
+
     rendered_chores_list = [(False, ch, importance(ch.doUrgency), ch.doUrgency) for ch in chores_list.chores.all()] + [(True, ch, importance(ch.reportUrgency), ch.reportUrgency) for ch in chores_list.chores.filter(choreType='R')]
     rendered_chores_list.sort(key=lambda tp: -tp[3])
-    return render(request, page, context={'chores': rendered_chores_list, 'chores_list': chores_list})
+    return render(request, page, context={'chores': rendered_chores_list, 'chores_list': chores_list, 'times_ago_list': Chore.TIMES_AGO})
 
 def home(request):
     if not request.user.is_authenticated():
